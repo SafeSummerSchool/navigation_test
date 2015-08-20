@@ -2,7 +2,7 @@
 <package>
   <name>function_safety_cam</name>
   <version>0.0.0</version>
-  <description>The pedestrian_detector package</description>
+  <description>The function_safety_cam package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag --> 
   <!-- Example:  -->

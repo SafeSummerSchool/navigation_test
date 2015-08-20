@@ -1,5 +1,5 @@
-#pragma once
-#include <stdafx.h>
+//#pragma once
+//#include <stdafx.h>
 #include "Image_Safety.h"
 
 namespace safety
@@ -59,11 +59,11 @@ namespace safety
 	
 	histogram<unsigned int>  safe::do_histogram(unsigned char * pixels, int width, int height, int bins_per_color)
 	{
-		return safe::compute_histogram(pixels, width, height, bins_per_color);
+		return compute_histogram(pixels, width, height, bins_per_color);
 	}
 	histogram<double> safe::do_uniform_histogram(unsigned char * pixels, int width, int height, int bins_per_color, bool uniform, bool accumulate)
 	{
-		return safe::compute_histogram_uniform(pixels, width, height, bins_per_color, uniform, accumulate);
+		return compute_histogram_uniform(pixels, width, height, bins_per_color, uniform, accumulate);
 	}
 	histogram<double> safe::compute_histogram_uniform(unsigned char * pixels, int width, int height, int bins_per_color, bool uniform, bool accumulate)
 	{
@@ -163,7 +163,7 @@ namespace safety
 					q = bins_per_color;
 					while (q > 1)
 					{
-						g = std::floor(g / 2);
+						g = floor(g / 2);
 						q /= 2;
 					}
 					bin_g = g;

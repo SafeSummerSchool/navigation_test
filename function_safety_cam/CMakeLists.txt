@@ -110,11 +110,11 @@ ${OpenCV_INCLUDE_DIRS}
 #   src/${PROJECT_NAME}/pedestrian_detector.cpp
 # )
 
-add_library(matio SHARED IMPORTED)
-set_property(TARGET matio PROPERTY IMPORTED_LOCATION /usr/local/lib/libmatio.so)
+#add_library(matio SHARED IMPORTED)
+#set_property(TARGET matio PROPERTY IMPORTED_LOCATION /usr/local/lib/libmatio.so)
 
 ## Declare a cpp executable
- add_executable(function_safety_cam src/function_safety_cam.cpp
+ add_executable(function_safety_cam src/function_safety_cam.cpp src/Image_Safety.cpp
  	
  )
 
@@ -126,7 +126,7 @@ set_property(TARGET matio PROPERTY IMPORTED_LOCATION /usr/local/lib/libmatio.so)
  target_link_libraries(function_safety_cam
    ${catkin_LIBRARIES}
    ${OpenCV_LIBRARIES}
-    matio
+    #matio
  )
 
 #############

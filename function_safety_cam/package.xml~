@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package>
-  <name>pedestrian_detector</name>
+  <name>function_safety_cam</name>
   <version>0.0.0</version>
   <description>The pedestrian_detector package</description>
 

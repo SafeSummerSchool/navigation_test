@@ -1,14 +1,13 @@
-#pragma once
 #include <stdio.h>
 #include <stdlib.h>
 #include <vector>
-
+#include <cmath>
 
 namespace safety
 {
 
-	template <typename TT>
-	public struct histogram {
+	template<typename TT>
+	struct histogram {
 	public:	
 		bool error;
 		bool uniform;
@@ -54,7 +53,7 @@ namespace safety
 					empty++;
 			return empty;
 		}
-		void addUni(int pos, TT Val)
+		void addUni(int pos, unsigned int Val)
 		{
 			if (h[pos]>0)
 				h[pos] = (h[pos] + Val)/2;
@@ -81,40 +80,40 @@ namespace safety
 		std::vector<TT> h;
 	};
 
-	public class safe
+	class safe
 	{
 
 
 	public:
 		//Construct
-		safe::safe();
-		safe::~safe();
+		safe();
+		~safe();
 		//Functions
-		void safe::reset();
-		std::vector<int> safe::get_error_count();
+		void reset();
+		std::vector<int> get_error_count();
 
-		histogram<unsigned int> safe::do_histogram(
+		histogram<unsigned int> do_histogram(
 			unsigned char * pixels, int width, int height, int bins_per_color);
 		
-		histogram<double>  safe::do_uniform_histogram(
+		histogram<double>  do_uniform_histogram(
 			unsigned char * pixels, int width, int height, int bins_per_color, bool uniform
 			, bool accumulate);
 	private:
 		// computes a histogram from pixel data
-		histogram<double> safe::compute_histogram_uniform(
+		histogram<double> compute_histogram_uniform(
 			unsigned char * pixels, int width, int height, int bins_per_color, bool uniform
 			, bool accumulate);
 
-		histogram<unsigned int>  safe::compute_histogram(
+		histogram<unsigned int>  compute_histogram(
 			unsigned char * pixels, int width, int height, int bins_per_color);
 
 		// frees the memory allocated by compute_histogram
-		void safe::delete_histogram(unsigned int * histogram);
+		void delete_histogram(unsigned int * histogram);
 		// frees the memory allocated by compute_histogram
-		void safe::delete_data(unsigned char * data);
+		void delete_data(unsigned char * data);
 
 		// writes a histogram to a text file
-		void safe::write_histogram(unsigned int * histogram, int bins_per_color,
+		void write_histogram(unsigned int * histogram, int bins_per_color,
 			char * file_name);
 
 
