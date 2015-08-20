@@ -18,6 +18,7 @@
 #include <camera_info_manager/camera_info_manager.h>
 #include <cv_bridge/cv_bridge.h>
 #include <sensor_msgs/image_encodings.h>
+#include <list>
 
 using namespace std;
 using namespace cv;
@@ -42,11 +43,10 @@ public:
 		//array_pub = nh.advertise<std_msgs::Float64MultiArray>("DistanceAngle", 1);
 		//array_pub2 = nh.advertise<std_msgs::Float64MultiArray>("BBox", 1);
 		//cam_sub = it.subscribeCamera("image_raw", 1, &MyNode::onImage, this);
-std::cout << "test" << std::endl;
+
 		cam_pub = it.advertiseCamera("/imageWithBBox", 1);
 		cam_sub = it.subscribeCamera("/usb_cam/image_raw", 1, &MyNode::onImage, this);
 		
-
 
 	}
 	;
@@ -57,7 +57,7 @@ std::cout << "test" << std::endl;
 	;
 
 	void onImage(const sensor_msgs::ImageConstPtr& msg,const sensor_msgs::CameraInfoConstPtr& p) {
-std::cout << "receiving " << std::endl;
+		mesReceived.push_back(ros::Time::now());
 		// do all the stuff here
 		//ROS_ERROR("GOT Image");
 		//convert  image to opencv
@@ -93,14 +93,14 @@ std::cout << "receiving " << std::endl;
 		std::cout << "Hist Size : "<<histo.size() << std::endl;
 		std::cout << "hist Max : "<<histo.max() << std::endl;
 		std::cout << "hist Min : "<<histo.min() << std::endl;
-		namedWindow( "Display window", WINDOW_AUTOSIZE );
-				cv::Mat Test(GrayIPLimage_);// Create a window for display.
-				imshow( "Display window", Test );                   // Show our image inside it.
+		//namedWindow( "Display window", WINDOW_AUTOSIZE );
+				//cv::Mat Test(GrayIPLimage_);// Create a window for display.
+			//	/imshow( "Display window", Test );                   // Show our image inside it.
 
-						waitKey(0);
 		
 		return;
 	}
+	std::list<ros::Time> mesReceived;
 private:
 	cv::Mat image;
 	ros::NodeHandle nh;
@@ -110,17 +110,50 @@ private:
 	boost::shared_ptr<camera_info_manager::CameraInfoManager> cinfor_;
 	safety::safe safe_image;
 
-
 };
 
 int main(int argc, char** argv) {
-	std::cout << "halloooo" << std::endl;
 	ros::init(argc, argv, "function_safety_cam");
-
 	MyNode node;
-
 	ros::spin();
+	/*std::list<ros::Time>::iterator it1;
+	while(1)
+	{
+		while(node.mesReceived.size()>10)
+		{
+			it1 = node.mesReceived.begin();
+			node.mesReceived.erase(it1);
+			std::cout << "errased!!! Size is now = "<< node.mesReceived.size() << std::endl;
+		}
+		if(node.mesReceived.size()>1)
+		{
+			unsigned int time = 0;
+			int i = 1;
+			for (std::list<ros::Time>::iterator it=node.mesReceived.begin(); it != node.mesReceived.end(); ++it)
+			{
+				std::list<ros::Time>::iterator itt = node.mesReceived.begin();
+				std::advance(itt, i);
+				i++;
+				time += (unsigned int)((*it).nsec-(*itt).nsec)/1000000;
+				if(i == 10)
+					break;
+			}
 
+
+
+
+
+
+
+
+
+
+			std::cout <<(double)time/(node.mesReceived.size()-1) << std::endl;
+
+		}
+
+		ros::spinOnce();
+	}*/
 
 	return 0;
 }
