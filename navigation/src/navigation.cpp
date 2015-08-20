@@ -8,6 +8,129 @@
 
 std_msgs::Float64MultiArray hi;
 obstacle_detection::boundingboxes b_boxes;
+bool hi_received = false;
+bool bb_received = false;
+
+float Start_x = 0;
+float Start_y = 0;	
+float Width_x = 0;
+float Width_y = 0;
+
+ros::Publisher marker_pub_BBox;
+
+        
+  visualization_msgs::Marker  Frobit::lines(float x1,float y1, float z1,float x2,float y2, float z2, visualization_msgs::Marker lineCollection ){
+		visualization_msgs::Marker line_list;
+        line_list.header.frame_id = line_list.header.frame_id = "/laser";
+        line_list.header.stamp = line_list.header.stamp = ros::Time::now();
+        line_list.ns = line_list.ns = "points_and_lines";
+        line_list.action = line_list.action = visualization_msgs::Marker::ADD;
+        line_list.pose.orientation.w = line_list.pose.orientation.w = 1.0;
+
+        line_list.id = 2;
+        line_list.type = visualization_msgs::Marker::LINE_LIST;
+
+        line_list.scale.x = 0.1;
+
+        line_list.color.g = 1.0;
+        line_list.color.b = 1.0;
+        line_list.color.a = 1.0;
+            geometry_msgs::Point p;
+            p.x = x2;
+            p.y = y2;
+            p.z = 0;
+
+            // The line list needs two points for each line
+            lineCollection.points.push_back(p);
+
+            p.x = x1;
+            p.y = y1;
+            p.z = 0;
+            lineCollection.points.push_back(p);
+
+            //marker_pub.publish(line_list);
+        }
+
+
+void Frobit::bboxesCallback(const obstacle_detection::boundingboxes& bboxes, int i,float r1_, float r2_, float theta)
+{
+	visualization_msgs::Marker line_list;
+	line_list.header.frame_id = "/laser";
+	 line_list.header.stamp = ros::Time::now();
+     line_list.ns = "BBox of Objects";
+     line_list.action = visualization_msgs::Marker::ADD;
+    line_list.pose.orientation.w = 1.0;
+
+    line_list.id = 2;
+
+    line_list.type = visualization_msgs::Marker::LINE_LIST;
+
+    line_list.scale.x = 0.1;
+
+
+    // Line list is red
+    line_list.color.g = 1.0;
+    line_list.color.a = 1.0;
+	
+		
+			Start_x = bboxes.boundingboxes[i].start.x;
+			Start_y = bboxes.boundingboxes[i].start.y;	
+			Width_x = bboxes.boundingboxes[i].width.x;
+			Width_x = bboxes.boundingboxes[i].width.y;
+		    //1-2
+		    line_list=lines(Start_x, Start_y, 0, Start_x+Width_x, Start_y, 0,line_list);
+		    
+		    //2-3
+		    line_list=lines(Start_x+Width_x, Start_y, 0, Start_x+Width_x, Start_y+Width_y, 0,line_list) ;
+		    //3-4
+		    line_list=lines(Start_x+Width_x, Start_y+Width_y, 0, Start_x, Start_y+Width_y, 0,line_list);
+		    //1-4
+		    line_list=lines( Start_x, Start_y, 0, Start_x, Start_y+Width_y, 0,line_list);
+			float X1,X2,Y1,Y2;
+				float r = r1_; 
+				if ((theta > PI/4 && theta < 3*PI/4) || (theta > 5*PI/4 && theta < 7*PI/4))
+				{
+					X1 = -10000;
+					Y1 = (double)(r - (double)X1  * cos(theta)) / sin(theta);
+					X2 = 10000;
+					Y2 = (double)(r - (double)X2  * cos(theta)) / sin(theta);
+					//ROS_INFO("oppe = %f, %f, %d, %f, %f, %f, %f",theta,r, h, Y1, (double)(r-(double)std::floor<int>(h/2))*RRESOLUTION, cos(t*tRes * DEG2RAD));
+
+				}
+				else
+				{
+					Y1 = -10000;
+					X1 = (double)(r - (double)Y1  * sin(theta)) / cos(theta);
+					Y2 = 10000;
+					X2 = (double)(r - (double)Y2  * sin(theta)) / cos(theta);
+					//ROS_INFO("nede");
+				}
+		    line_list=lines( X1, Y1, 0, X2, Y2, 0,line_list);
+				r = r2_;
+				if ((theta > PI/4 && theta < 3*PI/4) || (theta > 5*PI/4 && theta < 7*PI/4))
+				{
+					X1 = -10000;
+					Y1 = (double)(r - (double)X1  * cos(theta)) / sin(theta);
+					X2 = 10000;
+					Y2 = (double)(r - (double)X2  * cos(theta)) / sin(theta);
+					//ROS_INFO("oppe = %f, %f, %d, %f, %f, %f, %f",theta,r, h, Y1, (double)(r-(double)std::floor<int>(h/2))*RRESOLUTION, cos(t*tRes * DEG2RAD));
+
+				}
+				else
+				{
+					Y1 = -10000;
+					X1 = (double)(r- (double)Y1  * sin(theta)) / cos(theta);
+					Y2 = 10000;
+					X2 = (double)(r - (double)Y2  * sin(theta)) / cos(theta);
+					//ROS_INFO("nede");
+				}
+		    line_list=lines( X1, Y1, 0, X2, Y2, 0,line_list);
+			
+	
+    marker_pub_BBox.publish(line_list);
+}
+
+
 
 // constructor for the Frobit
 Frobit::Frobit(){	
@@ -18,7 +141,7 @@ Frobit::Frobit(){
     v_max = 0.3;
     d_max = 4;
 
-	sub_BB = n.subscribe("/obstacle_detection/boundingboxes", 5, &Frobit::bboxesCallback, this);
+	sub_BB = n.subscribe("/obstacle_detection/boundingboxes", 5, &Frobit::boxesCallback, this);
 	sub_lines = n.subscribe("/measHoughKalman", 5, &Frobit::houghCallback,this);
 	twist_pub_ = n.advertise<geometry_msgs::TwistStamped>("/cmd_vel2", 1000);
 	deadman_pub_ = n.advertise<std_msgs::Bool>("/fmCommand/deadman", 1000);
@@ -28,12 +151,16 @@ Frobit::Frobit(){
 
 void Frobit::houghCallback(const std_msgs::Float64MultiArray& houghInfo){
 	hi = houghInfo;	
-	updateVel(hi,b_boxes);
+	hi_received=true;
+	if(bb_received)
+		updateVel(hi,b_boxes);
 }
 
-void Frobit::bboxesCallback(const obstacle_detection::boundingboxes& bboxes){
-	b_boxes = bboxes;	
-	updateVel(hi,b_boxes);
+void Frobit::boxesCallback(const obstacle_detection::boundingboxes& bboxes){
+	b_boxes = bboxes;
+	bb_received=true;	
+	if(hi_received)
+		updateVel(hi,b_boxes);
 }
 
 void Frobit::updateVel(const std_msgs::Float64MultiArray houghInfo, const obstacle_detection::boundingboxes bboxes){
@@ -43,16 +170,18 @@ void Frobit::updateVel(const std_msgs::Float64MultiArray houghInfo, const obstac
 	float Width_x = 0;
 	float Width_y = 0;
 	float distance = 99;
+	int foundPos = 0;
 	// search through bounding boxes list, delete all the ones that are behind the robot (x is negative) and save the one that is closest to the robot (smallest x)
 	for (size_t i=0;i<bboxes.boundingboxes.size();i++)
 	{
-		if(bboxes.boundingboxes[i].start.x>0 && bboxes.boundingboxes[i].start.x < distance)
+		if((bboxes.boundingboxes[i].start.x>0 && bboxes.boundingboxes[i].start.x < distance) || (bboxes.boundingboxes[i].start.x>0 && bboxes.boundingboxes[i].start.x+bboxes.boundingboxes[i].width.x < distance))
 		{
 			distance = bboxes.boundingboxes[i].start.x;
 			Start_x = bboxes.boundingboxes[i].start.x;
 			Start_y = bboxes.boundingboxes[i].start.y;	
 			Width_x = bboxes.boundingboxes[i].width.x;
 			Width_x = bboxes.boundingboxes[i].width.y;
+			foundPos = i;
 		}
 
 	}
@@ -92,20 +221,20 @@ void Frobit::updateVel(const std_msgs::Float64MultiArray houghInfo, const obstac
 	{	
 		if(Start_y > 0)
 		{
-			r1_ = -Start_y; // because r1_ should be negative
+			r2_ = Start_y; // because r1_ should be negative
 		}
 		else
 		{
-			r2_ = fabs(Start_y+Width_y);
+			r1_ = Start_y+Width_y;
 		}
 	}
-
 	// handle the velocity, in case robot is running close to an obstacle 
 	float R=std::min(fabs(r1_),fabs(r2_)); //smallest r distance
 
 	// determine the frontal distance to the obstacle	
 	float phi = fabs(90-fabs(theta))*DEG2RAD;
 	float front_dist_ = R/cos(phi);
+	bboxesCallback(bboxes,foundPos,r1_,r2_,theta);
 
 	// change the velocity
 	twist.twist.linear.x = std::min((float)fabs(front_dist_/d_max), 1.0f)*v_max;	
@@ -128,6 +257,7 @@ int main(int argc, char** argv){
     ros::Rate loop_rate(10); // publish 10 messages per second
 	// while (ros::ok()){			
 		//frobo->updateVel(); //activate motors
+		marker_pub_BBox = nh.advertise<visualization_msgs::Marker>("BBbox_Nav_Viz", 10);
 		ros::spin();
 		//loop_rate.sleep();
         //}*/
