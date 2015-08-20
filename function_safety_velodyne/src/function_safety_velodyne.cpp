@@ -198,7 +198,7 @@ main (int argc, char** argv)
 		viewer->createViewPort (0.5, 0.0, 1.0, 0.5, v4);*/
 
 
-	viewer->addCoordinateSystem(1.0);
+	//viewer->addCoordinateSystem(1.0);
 
 	n = 0;
 
