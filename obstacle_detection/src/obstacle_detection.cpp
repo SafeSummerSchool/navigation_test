@@ -803,7 +803,7 @@ void rawCloudHandler(const sensor_msgs::PointCloud2ConstPtr& laserCloud)
 		{
 			//viewer->setCameraPosition(-20,0,10,1,0,2,1,0,2,v1);
 			//viewer->setCameraPosition(-20,0,10,1,0,2,1,0,2,v2);
-			viewer->loadCameraParameters("pcl_video.cam");
+			//viewer->loadCameraParameters("pcl_video.cam");
 		}
 #if (OLD_METHOD)
 	}

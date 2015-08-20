@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.8.3 FATAL_ERROR)
 project(obstacle_detection)
 
+set(PCL_DIR "/home/robot/pcl-trunk/build/") 
+
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
@@ -35,7 +37,7 @@ catkin_package(
 #  LIBRARIES pcl_ros
 #  CATKIN_DEPENDS rosbag roscpp std_msgs
 #  DEPENDS system_lib
-  CATKIN_DEPENDS message_runtime
+  CATKIN_DEPENDS message_runtime 
 )
 
 include_directories(
@@ -47,7 +49,7 @@ link_directories(${PCL_LIBRARIES})
 
 add_definitions(${PCL_DEFINITIONS})
 
-add_executable(obstacle_detection src/obstacle_detection.cpp src/GroundEstimation.cpp)
+add_executable(obstacle_detection src/obstacle_detection.cpp)
 
 target_link_libraries(obstacle_detection
   ${catkin_LIBRARIES}

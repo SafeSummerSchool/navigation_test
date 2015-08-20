@@ -45,7 +45,7 @@
 #include <pcl/filters/project_inliers.h>
 
 #include <pcl/features/moment_invariants.h>
-#include "GlobalPlaneDistance.h"
+//#include "GlobalPlaneDistance.h"
 //#include "GroundEstimation.h"
 
 #include <pcl/common/transforms.h>
@@ -72,7 +72,7 @@
 //#include <pcl/common/centroid.h>
 //#include <obstacle_detection/boundingbox.h>
 //#include <obstacle_detection/boundingboxes.h>
-
+#define PI 3.141592654
 
 using namespace std;
 using namespace cv;
@@ -96,7 +96,63 @@ int n;
 
 void rawCloudHandler(const sensor_msgs::PointCloud2ConstPtr& laserCloud)
 {
-	
+	ros::Time timestamp = laserCloud->header.stamp;
+	//bool returnBool;
+
+	viewer->removeAllPointClouds(0);
+
+	pcl::fromROSMsg(*laserCloud, *laserCloudIn);
+
+	double view_direction = PI;
+	double view_width=20.0f*PI/180.0f;
+	double distance_min = 0.8;
+	double distance_max = 1.0;
+	double angleH, angleV;
+	double distance;
+	pcl::PointXYZI point;
+	pcl::PointCloud<pcl::PointXYZI>::Ptr cloudStick(new pcl::PointCloud<pcl::PointXYZI>());
+	//laserCloudIn->points
+	std::vector<double> laserReturns;
+	for (size_t i=0;i<laserCloudIn->points.size();i++)
+	{
+		point = laserCloudIn->points[i];
+		angleH = atan2(point.y,point.x);
+		distance = sqrt(point.x*point.x+point.y*point.y);
+		angleV = roundf(atan(point.z/distance)*10000)/10000;
+
+		if ((angleH > view_direction-view_width/2) && (angleH < view_direction+view_width/2) && (distance > distance_min) && (distance < distance_max))
+		{
+			cloudStick->push_back(point);
+
+			if ( std::find(laserReturns.begin(), laserReturns.end(), angleV)!=laserReturns.end() )
+				;
+			else
+			{
+				laserReturns.push_back(angleV);
+			}
+
+			//ROS_INFO("angleH = %f, angleV = %f, distance = %f",angleH, angleV, distance);
+		}
+	}
+
+	//std::cout << laserReturns << std::endl;
+	//ROS_INFO("cloudStick size = %d",cloudStick->points.size());
+
+
+//	for (int i=0;i<laserReturns.size();i++)
+//	{
+//		ROS_INFO("angleV = %f",laserReturns[i]);
+//	}
+
+	ROS_INFO("laserReturns size = %d",laserReturns.size());
+
+	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZI> color1(laserCloudIn, 255, 255, 255);
+	viewer->addPointCloud<pcl::PointXYZI>(laserCloudIn,color1,"cloudRGB",viewP(RawCloud));
+
+	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZI> color2(cloudStick, 255, 255, 255);
+	viewer->addPointCloud<pcl::PointXYZI>(cloudStick,color2,"StickCloud",viewP(StickCloud));
+
+	viewer->spinOnce();
 }
 
 int
@@ -129,14 +185,14 @@ main (int argc, char** argv)
 	//
 	//	// Create view ports
 	//	// 1 view port
-	viewer->createViewPort(0.0,0.0,1.0,1.0,v2);
+	//viewer->createViewPort(0.0,0.0,1.0,1.0,v2);
 
 	// 2 view ports
-	//viewer->createViewPort(0.0,0.0,0.5,1.0,v1);
-	//viewer->createViewPort(0.5,0.0,1.0,1.0,v2);
+	viewer->createViewPort(0.0,0.0,0.5,1.0,v1);
+	viewer->createViewPort(0.5,0.0,1.0,1.0,v2);
 
 	// 4 view ports
-		/*viewer->createViewPort (0.0, 0.5, 0.5, 1.0, v1);
+	/*viewer->createViewPort (0.0, 0.5, 0.5, 1.0, v1);
 		viewer->createViewPort (0.5, 0.5, 1.0, 1.0, v2);
 		viewer->createViewPort (0.0, 0.0, 0.5, 0.5, v3);
 		viewer->createViewPort (0.5, 0.0, 1.0, 0.5, v4);*/
