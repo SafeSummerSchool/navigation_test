@@ -20,6 +20,7 @@
 #include <algorithm>
 #include <vector>
 //#include "PedestrianDetector.hpp"
+#include <Image_Safety.h>
 #include <dirent.h>
 #include <string.h>
 #include <math.h>
@@ -82,8 +83,18 @@ public:
 			ROS_ERROR("cv_bridge exception: %s", e.what());
 			return;
 		}
-		//resize(cv_ptr->image, image, Size(), imageResize, imageResize);
 
+		cv::Mat greyMat;
+		cv::cvtColor(cv_ptr->image, greyMat, cv::COLOR_BGR2GRAY);
+
+		IplImage* GrayIPLimage_ = cv::cvCloneImage(&(IplImage)greyMat);
+		safety::histogram<unsigned int> histo(false);
+		histo = safe_image.do_histogram((unsigned char*)GrayIPLimage_->imageData, GrayIPLimage_->width, GrayIPLimage_->height, 16);
+		//resize(cv_ptr->image, image, Size(), imageResize, imageResize);
+		std::cout << "Non Empty : "<<hist.nonempty() << std::endl;
+		std::cout << "Hist Size : "<<hist.size() << std::endl;
+		std::cout << "hist Max : "<<hist.max() << std::endl;
+		std::cout << "hist Min : "<<hist.min() << std::endl;
 	}
 private:
 	cv::Mat image;
@@ -91,6 +102,7 @@ private:
 	image_transport::ImageTransport it;
 	image_transport::CameraSubscriber cam_sub;
 	boost::shared_ptr<camera_info_manager::CameraInfoManager> cinfor_;
+	safety::safe safe_image;
 
 
 };
