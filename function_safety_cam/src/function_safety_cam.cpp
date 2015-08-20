@@ -71,29 +71,33 @@ std::cout << "receiving " << std::endl;
 			return;
 		}
 
+		resize(cv_ptr->image, image, Size(), 0.5, 0.5);
 		
 		cv::Mat greyMat;
-		cv::cvtColor(cv_ptr->image, greyMat, cv::COLOR_BGR2GRAY);
+		cv::cvtColor(image, greyMat, cv::COLOR_BGR2GRAY);
 
-
-		sensor_msgs::CameraInfoPtr cc(
-				new sensor_msgs::CameraInfo(cinfor_->getCameraInfo()));
-		sensor_msgs::ImagePtr msg_out = cv_bridge::CvImage(std_msgs::Header(),"bgr8", greyMat).toImageMsg();
-		msg_out->header.stamp = ros::Time::now();
 		IplImage* GrayIPLimage_;
 		GrayIPLimage_ = cvCreateImage(cvSize(greyMat.cols,greyMat.rows),8,1);
+		IplImage GrayIPLimg=greyMat;
+		cvCopy(&GrayIPLimg,GrayIPLimage_);
 
-		//cam_pub.publish(msg_out, cc);
+
+
 		//IplImage ipltemp=image1;
 		//cvCopy(&ipltemp,image2);
 
 		safety::histogram<unsigned int> histo(false);
-		histo = safe_image.do_histogram((unsigned char*)GrayIPLimage_->imageData, greyMat.cols, greyMat.rows, 16);
+		histo = safe_image.do_histogram((unsigned char*)GrayIPLimage_->imageData, greyMat.cols, greyMat.rows, 1	);
 		//resize(cv_ptr->image, image, Size(), imageResize, imageResize);
 		std::cout << "Non Empty : "<<histo.nonempty() << std::endl;
 		std::cout << "Hist Size : "<<histo.size() << std::endl;
 		std::cout << "hist Max : "<<histo.max() << std::endl;
 		std::cout << "hist Min : "<<histo.min() << std::endl;
+		namedWindow( "Display window", WINDOW_AUTOSIZE );
+				cv::Mat Test(GrayIPLimage_);// Create a window for display.
+				imshow( "Display window", Test );                   // Show our image inside it.
+
+						waitKey(0);
 		
 		return;
 	}
