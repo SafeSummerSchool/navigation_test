@@ -21,21 +21,22 @@ from pylab import ion
 class KalmanFilterClass:
     def __init__(self):
         self.states = []
+        rospy.init_node('kalman_filter', anonymous=True)
         #self.listningAngularData()
         self.pubImu = rospy.Publisher("/measHoughKalman",  Float64MultiArray, queue_size=10)
         # Plotting parameters
-        self.showPlot = False
+        self.showPlot = True
         self.show3DLiveView = False 
         self.show3DLiveViewInterval = 3
         
         self.unwrapLast = 0.0;
         self.unwrapCurrent = 0.0;
         # Time variables
-        self.ts_gyro_now = 0.0
-        self.ts_gyro_prev = 0.0
+        self.ts_gyro_now = rospy.Time.now()
+        self.ts_gyro_prev = rospy.Time.now()
 
-        self.ts_hough_now = 0.0
-        self.ts_hough_prev = 0.0
+        self.ts_hough_now = rospy.Time.now()
+        self.ts_hough_prev = rospy.Time.now()
 
         # approx. bias values determined by averaging over static measurements
         self.bias_gyro_x = 0.0753 # [rad/measurement]
@@ -53,6 +54,8 @@ class KalmanFilterClass:
         self.gyroVar = 0.005
         #self.yawHoughVar = 0.01
         self.yawHoughVar = 0.01
+
+        self.predVar = 1 # Don't known what the start value should be (is only a problem if a hough is received before a imu msg)
 
         # Kalman filter start guess
         self.estAngle = -pi/4.0      # PC: Why this random value? 
@@ -104,7 +107,8 @@ class KalmanFilterClass:
             self.ts_gyro_now = ts_gyro_recv # only the first time
         self.ts_gyro_prev = self.ts_gyro_now
         self.ts_gyro_now = ts_gyro_recv
-        Ttmp = long((self.ts_gyro_now-self.ts_gyro_prev).to_nsec())
+        test = self.ts_gyro_now-self.ts_gyro_prev
+        Ttmp = long(test.to_nsec())
         T = float(Ttmp)/1000000000.0  # Time between timestamps
         #rospy.loginfo(rospy.get_caller_id() + " Topic received")
         #rospy.loginfo(msgImu)
@@ -205,8 +209,7 @@ class KalmanFilterClass:
         # anonymous=True flag means that rospy will choose a unique
         # name for our 'gettingImuData' node so that multiple listeners can
         # run simultaneously.
-        rospy.init_node('kalman_filter', anonymous=True)
-        test = Imu
+        
         rospy.Subscriber("/fmInformation/imu", Imu, self.callbackImu)
         rospy.Subscriber("/measHough", Float64MultiArray, self.callbackHough)
 
