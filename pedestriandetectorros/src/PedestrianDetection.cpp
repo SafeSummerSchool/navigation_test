@@ -201,8 +201,8 @@ public:
 		marker.pose.position.z = 1;
 		
 		for (int iBbs = 0; iBbs < bbs.size(); ++iBbs) {
-			marker.pose.position.x = bbs[iBbs].distance*cos(bbs[iBbs].angle+3.14/2);
-			marker.pose.position.y = bbs[iBbs].distance*sin(bbs[iBbs].angle+3.14/2);
+			marker.pose.position.x = bbs[iBbs].distance*cos(bbs[iBbs].angle);
+			marker.pose.position.y = bbs[iBbs].distance*sin(bbs[iBbs].angle);
 			vis_pub.publish(marker);	
 		}
 		if(bbs.size() == 0) {

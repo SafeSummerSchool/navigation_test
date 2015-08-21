@@ -12,7 +12,7 @@ distanceBoundary2 = 3
 distanceBoundary3 = 5
 timeBetweenEvaluation = 0.2 # Time between evaulations in seconds
 timeBetweenVoice = 3.0 # The  robot must repeat state every X seconds
-time2ForgetHumans = 5.0 # Forget humans after X seconds
+time2ForgetHumans = 3.0 # Forget humans after X seconds
 Human = namedtuple('Human', ['distance', 'angle','timeSinceDetection'])
 
 pubHumanDangerLevel = rospy.Publisher("/HumanDangerLevel", UInt16 , queue_size=10)
@@ -77,15 +77,15 @@ def EvaluateHumanAwareness(data):
         print "HumanDanger1: Human detected far away do nothing..."
     elif currentHumanDangerState == 2:
         msgHumanDangerLevel.data = 2
-        voice = "Approaching! Move away!"
+        voice = "Please move away!"
         print "HumanDanger2: Slow down and send warning."        
     elif currentHumanDangerState == 3:     
         msgHumanDangerLevel.data = 3
-        voice = "Stopping! Move away!"
+        voice = "Move away!"
         print "HumanDanger3: Stop and send warning."
     else:
         msgHumanDangerLevel.data = 4
-        voice = "Emergency! Emergency! Emergency!"
+        voice = "Emergency!"
         print "HumanDanger4: Emergency."        
         
     if(voice != "" ):
@@ -95,8 +95,7 @@ def EvaluateHumanAwareness(data):
             soundhandle.stopAll()
             soundhandle.say(voice)
             timeSinceVoice = timeBetweenVoice
-        
-    pubHumanDangerLevel.publish(msgHumanDangerLevel)
+    # pubHumanDangerLevel.publish(msgHumanDangerLevel)
     previousHumanDangerState = currentHumanDangerState
 
 def callbackPedDetected(data):

@@ -8,13 +8,14 @@ RoboCard based frobits using 1800/700 ohm voltage dividers:
 
 -->
 
+
 <launch>
 	<!-- frobit parameters --> 
 	<param name="diff_steer_wheel_distance" value="0.375"/>
 	<param name="ticks_per_meter_left" value="677" /> <!-- 980 ticks/rot * (22*pi cm/100 cm/m)rot    - before: 562 -->
 	<param name="ticks_per_meter_right" value="677" />
 
-	<node pkg="rosbag" name="rosbag_record" type="record" args="-a"/>
+	<!--node pkg="rosbag" name="rosbag_record" type="record" args="-a"/-->
 
 		<!--node pkg="frobit_plot" name="frobit_plot" type="frobit_plot_node.py" output="screen" >
 			<param name="pose_sub" value="/fmKnowledge/pose" />
@@ -158,6 +159,39 @@ RoboCard based frobits using 1800/700 ohm voltage dividers:
 			<param name="pointcloud_out" value="/pointcloud_out" />
 		</node>
 
+	<node name="usb_cam" pkg="usb_cam" type="usb_cam_node" output="screen" >
+	    <param name="video_device" value="/dev/video0" />
+	    <param name="image_width" value="640" /> # 640 1920
+	    <param name="image_height" value="480" /> # 480 1080
+	    <param name="pixel_format" value="yuyv" />
+	    <param name="camera_frame_id" value="usb_cam" />
+	    <!--param name="io_method" value="mmap"/-->
+	  </node>
+
+	<!-- Makes pedestrian detector node. Change between the good and the bad detector by changing the model dir. -->
+	<node type="pedestrian_detector_node" name="ped" pkg="pedestrian_detector" respawn="true">
+		<param name="model_dir" value="$(find pedestrian_detector)/pedmodels/AcfInriaDetector.mat" />
+		<!--param name="model_dir" value="$(find pedestrian_detector)pedmodels/LdcfInriaDetector.mat" /-->
+		<param name="imageResize" value="0.5" />
+		<param name="cameraHeight" value="0.37" />
+		<param name="angleTiltDegrees" value="0.0" />
+		<remap from="~image_raw" to="/image_raw" />
+	</node>
+
+	<!-- Makes viewing node for showing detected pedestrians. -->
+	<node name="image_view" pkg="image_view" type="image_view" respawn="false" output="screen">
+    		<remap from="image" to="/ped/imageWithBBox"/>
+    		<!--param name="autosize" value="true" /-->
+	</node> 
+
+	<node type="soundplay_node.py" name="soundplay_node" pkg="sound_play" respawn="true" output="screen">
+
+	</node>	
+	<node type="human_awareness.py" name="human_awareness" pkg="human_awareness" respawn="true" output="screen">
+
+	</node>
+
+
 	<group ns="fmProcessors">
 		<!-- calculate odometry based on wheel encoders and IMU yaw axis orientation -->
 		<!--node pkg="differential_odometry" name="differential_odometry" type="differential_odometry_node" output="screen" >
@@ -253,6 +287,9 @@ RoboCard based frobits using 1800/700 ohm voltage dividers:
 	<node pkg="draw_marker_boxes" name="draw_marker_boxes" type="draw_marker_boxes_node" output="screen" >
 			
 	</node>
+
+	  
+
 		<!--node pkg="frobit_demo" type="waypoint_navigation_node.py" name="wptnav" output="screen">
 			<param name="automode_sub" value="/fmDecision/automode" />
 			<param name="pose_sub" value="/fmKnowledge/pose" />

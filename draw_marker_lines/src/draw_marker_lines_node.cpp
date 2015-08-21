@@ -24,7 +24,7 @@ void line(float x1,float y1, float z1,float x2,float y2, float z2){
 
         line_list.scale.x = 0.1;
 
-        line_list.color.r = 1.0;
+        line_list.color.b = 1.0;
         line_list.color.a = 1.0;
             geometry_msgs::Point p;
             p.x = x2;
