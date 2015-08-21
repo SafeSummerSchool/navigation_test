@@ -38,8 +38,8 @@ const int LinesFiltered = 26;
 const int BLACK = 99;
 
 #define SHOW1 RawCloud
-#define SHOW2 Classification
-#define SHOW3 LinesFiltered
+#define SHOW2 LinesFiltered
+#define SHOW3 Classification
 #define SHOW4 SegmentsFiltered
 
 #define training false

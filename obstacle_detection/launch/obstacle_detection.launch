@@ -9,7 +9,11 @@
 
 <launch>
 	<node pkg="obstacle_detection" name="obstacle_detection" type="obstacle_detection" output="screen" >
-
+		<param name="point_cloud_in" value="/velodyne_points" />
+		<param name="measHough_in" value="/measHough" />
+		<param name="bounding_boxes_out" value="/obstacle_detection/boundingboxes" />
+		<param name="visualization" value="true" />
+		<param name="min_cluster_distance" value="0.1f" />
 	</node>
 
 

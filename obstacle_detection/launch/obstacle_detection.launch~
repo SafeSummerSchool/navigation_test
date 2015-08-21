@@ -9,9 +9,10 @@
 
 <launch>
 	<node pkg="obstacle_detection" name="obstacle_detection" type="obstacle_detection" output="screen" >
-			<param name="ring" value="15" />
-			<param name="pointcloud_in" value="/velodyne_points" />
-			<param name="pointcloud_out" value="/velodyne_1d_cloud" />
+		<param name="point_cloud_in" value="/velodyne_points" />
+		<param name="measHough_in" value="/measHough" />
+		<param name="visualization" value="true" />
+		<param name="bounding_boxes_out" value="/obstacle_detection/boundingboxes" />
 	</node>
 
 

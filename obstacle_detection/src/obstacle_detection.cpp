@@ -100,6 +100,12 @@ float theta, r1, r2;
 bool receivedHough = false;
 int n;
 
+std::string point_cloud_in;
+std::string measHough_in;
+bool visualizationFlag;
+std::string bounding_boxes_out;
+double min_cluster_distance;
+
 void linesHandler(const std_msgs::Float64MultiArray& houghLines)
 {
 	theta = houghLines.data[0];
@@ -123,8 +129,11 @@ void rawCloudHandler(const sensor_msgs::PointCloud2ConstPtr& laserCloud)
 
 	pcl::fromROSMsg(*laserCloud, *laserCloudIn);
 
+	if (visualizationFlag)
+	{
 	viewer->removeAllPointClouds(0);
 	viewer->removeAllShapes(0);
+	}
 
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloudRGB(new pcl::PointCloud<pcl::PointXYZRGB>);
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloudLabeled(new pcl::PointCloud<pcl::PointXYZRGB>);
@@ -152,9 +161,11 @@ void rawCloudHandler(const sensor_msgs::PointCloud2ConstPtr& laserCloud)
 	pcl::copyPointCloud(*laserCloudIn, *cloudRaw);
 
 	// Single colored
-	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZRGB> color1(cloudRGB, 0, 0, 255);
-
+	if (visualizationFlag)
+		{
+		pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZRGB> color1(cloudRGB, 0, 0, 255);
 	viewer->addPointCloud<pcl::PointXYZRGB>(cloudRGB,color1,"cloudRGB",viewP(RawCloud));
+		}
 	//viewer->addText ("RawCloud", 10, 10, "vPP text", viewP(RawCloud));
 
 	// Ground modeling
@@ -195,11 +206,13 @@ void rawCloudHandler(const sensor_msgs::PointCloud2ConstPtr& laserCloud)
 	}
 
 	pcl::copyPointCloud(*cloud_filtered, *cloud_filteredRGB);
+	if (visualizationFlag)
+		{
 	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZRGB> color9(cloudRGB, 0, 0, 255);
 	viewer->addPointCloud<pcl::PointXYZRGB>(cloud_filteredRGB,color9,"LinesFiltered",viewP(LinesFiltered));
 	viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "LinesFiltered");
 	viewer->addText ("LinesFiltered", 10, 10, fontsize, 1, 1, 1, "LinesFiltered text", viewP(LinesFiltered));
-
+		}
 
 
 	// Grid Minimum
@@ -426,6 +439,14 @@ void rawCloudHandler(const sensor_msgs::PointCloud2ConstPtr& laserCloud)
 			}
 		}
 
+		if (visualizationFlag)
+		{
+			pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> colorC(classificationCloud);
+			viewer->addPointCloud<pcl::PointXYZRGB>(classificationCloud,colorC,"Classification",viewP(Classification));
+			viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "Classification");
+			viewer->addText ("Classification", 10, 10, fontsize, 1, 1, 1, "Classification text", viewP(Classification));
+		}
+
 
 #endif
 
@@ -459,7 +480,7 @@ void rawCloudHandler(const sensor_msgs::PointCloud2ConstPtr& laserCloud)
 		//reg.setPointColorThreshold (6);
 		//reg.setRegionColorThreshold (5);
 		reg.setMinClusterSize (1);
-		reg.setResidualThreshold(0.2f);
+		reg.setResidualThreshold(min_cluster_distance);
 		reg.setCurvatureTestFlag(false);
 		//		reg.setResidualTestFlag(true);
 		//		reg.setNormalTestFlag(false);
@@ -482,7 +503,9 @@ void rawCloudHandler(const sensor_msgs::PointCloud2ConstPtr& laserCloud)
 		bboxes.header.stamp = timestamp;
 		bboxes.header.frame_id = "/velodyne";
 
-		viewer->removeAllShapes(viewP(SegmentsFiltered));
+		if (visualizationFlag)
+			viewer->removeAllShapes(viewP(SegmentsFiltered));
+
 
 		for (size_t i=0;i<clusters.size();i++)
 		{
@@ -509,7 +532,8 @@ void rawCloudHandler(const sensor_msgs::PointCloud2ConstPtr& laserCloud)
 
 				bboxes.boundingboxes.push_back(bbox);
 
-				viewer->addCube (min_pt[0], max_pt[0], min_pt[1], max_pt[1], min_pt[2], max_pt[2], 1.0f, 1.0f, 1.0f, (boost::format("%04d") % i).str().c_str(), viewP(SegmentsFiltered));
+				if (visualizationFlag)
+					viewer->addCube (min_pt[0], max_pt[0], min_pt[1], max_pt[1], min_pt[2], max_pt[2], 1.0f, 1.0f, 1.0f, (boost::format("%04d") % i).str().c_str(), viewP(SegmentsFiltered));
 			}
 
 
@@ -520,6 +544,8 @@ void rawCloudHandler(const sensor_msgs::PointCloud2ConstPtr& laserCloud)
 		//		//pcl::visualization::CloudViewer viewer ("Cluster viewer");
 		//		//viewer.showCloud (colored_cloud);
 		//
+		if (visualizationFlag)
+		{
 		pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> colorC2(colored_cloud);
 		viewer->addPointCloud<pcl::PointXYZRGB>(colored_cloud,colorC2,"Segments",viewP(Segments));
 		viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "Segments");
@@ -530,6 +556,7 @@ void rawCloudHandler(const sensor_msgs::PointCloud2ConstPtr& laserCloud)
 		viewer->addPointCloud<pcl::PointXYZRGB>(clustersFilteredCloud,colorC3,"SegmentsFiltered",viewP(SegmentsFiltered));
 		viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "SegmentsFiltered");
 		viewer->addText ("Segments", 10, 10, fontsize, 1, 1, 1, "SegmentsFiltered text", viewP(SegmentsFiltered));
+		}
 		//
 		//
 		//		// BOUNDING BOXES
@@ -809,36 +836,45 @@ void rawCloudHandler(const sensor_msgs::PointCloud2ConstPtr& laserCloud)
 	}
 #endif
 
-	viewer->spinOnce();
+	if (visualizationFlag)
+		viewer->spinOnce();
 
 	// Save screenshot
-	std::stringstream tmp;
-	tmp << n;
-	viewer->saveScreenshot("/home/mikkel/images/" + (boost::format("%04d") % n).str() + ".png");
-	n++;
+//	std::stringstream tmp;
+//	tmp << n;
+//	viewer->saveScreenshot("/home/mikkel/images/" + (boost::format("%04d") % n).str() + ".png");
+//	n++;
 }
 
 int
 main (int argc, char** argv)
 {
 	ros::init(argc, argv, "obstacle_detection");
-	ros::NodeHandle nh;
+	ros::NodeHandle nh("~");
+
+	nh.param<std::string>("point_cloud_in",point_cloud_in,"/velodyne_points");
+	nh.param<std::string>("measHough_in",measHough_in,"/measHough");
+	nh.param<bool>("visualization",visualizationFlag,true);
+	nh.param<std::string>("bounding_boxes_out",bounding_boxes_out,"/obstacle_detection/boundingboxes");
+	nh.param<double>("min_cluster_distance",min_cluster_distance,0.2f);
+//	nh.param<std::string>("in",in,"/laserpointCloud");
+//	nh.param<std::string>("in",in,"/laserpointCloud");
 
 
 	ros::Publisher pubProcessedPointCloud = nh.advertise<sensor_msgs::PointCloud2>
 	("/obstacle_detection/point_cloud_processed", 1);
 
 	ros::Subscriber subRawPointCloud = nh.subscribe<sensor_msgs::PointCloud2>
-	("/velodyne_points", 2, rawCloudHandler);
+	(point_cloud_in, 2, rawCloudHandler);
 
-	ros::Subscriber sub2Lines = nh.subscribe("/measHough", 2, linesHandler);
+	ros::Subscriber sub2Lines = nh.subscribe(measHough_in, 2, linesHandler);
 
 
 	ros::Publisher pubOccupancyGrid = nh.advertise<nav_msgs::OccupancyGrid>
 	("/obstacle_detection/velodyne_evidence_grid", 1);
 
 	ros::Publisher pubBBoxes = nh.advertise<obstacle_detection::boundingboxes>
-	("/obstacle_detection/boundingboxes", 1);
+	(bounding_boxes_out, 1);
 
 	pubProcessedPointCloudPointer = &pubProcessedPointCloud;
 	subRawPointCloudPointer = &subRawPointCloud;
@@ -847,6 +883,8 @@ main (int argc, char** argv)
 	sub2LinesPointer = &sub2Lines;
 
 	// Set up PCL Viewer
+	if (visualizationFlag)
+	{
 	viewer.reset (new pcl::visualization::PCLVisualizer (argc, argv, "PointCloud"));
 	viewer->registerKeyboardCallback (keyboardEventOccurred);
 	//
@@ -866,7 +904,7 @@ main (int argc, char** argv)
 
 
 	viewer->addCoordinateSystem(1.0);
-
+	}
 	n = 0;
 
 	ros::spin();
