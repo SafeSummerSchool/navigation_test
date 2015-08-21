@@ -50,11 +50,11 @@ public:
 				//line.header.stamp = ros::Time::now();
 				//line.header.frame_id = "/laser";
 		
-		std::cout << "line1 : " << "\n";
-		result.line1.printVars();
+		//std::cout << "line1 : " << "\n";
+		//result.line1.printVars();
 
-		std::cout << "line2 : " <<  "\n";
-		result.line2.printVars();
+		//std::cout << "line2 : " <<  "\n";
+		//result.line2.printVars();
 
 		pointcloudWline.header.seq++;
 		pointcloudWline.header.stamp = ros::Time::now();

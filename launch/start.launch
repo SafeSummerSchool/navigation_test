@@ -92,29 +92,6 @@ RoboCard based frobits using 1800/700 ohm voltage dividers:
 			<param name="covariance_y" value="0.001"/>
 			<param name="covariance_z" value="0.001"/>
 		 </node>
-
-		<!-- VELODYNE Lidar -->
-		<arg name="pcap" default="" />
-		<arg name="calibration" default="$(find velodyne_pointcloud)/params/32db.yaml"/>
-
-		<!-- start nodelet manager and driver nodelets -->
-		<include file="$(find velodyne_driver)/launch/nodelet_manager.launch">
-		<arg name="model" value="32E"/>
-		<arg name="pcap" value="$(arg pcap)"/>
-		</include>
-
-		<!-- start cloud nodelet -->
-		<include file="$(find velodyne_pointcloud)/launch/cloud_nodelet.launch">
-		<arg name="calibration" value="$(arg calibration)"/>
-		<arg name="min_range" value="0.5" />
-		<arg name="max_range" value="5.0" />
-		</include>
-
-		<node pkg="velodyne_node" name="velodyne_node" type="velodyne_node" output="screen" >
-			<param name="ring" value="15" />
-			<param name="pointcloud_in" value="/velodyne_points" />
-			<param name="pointcloud_out" value="/pointcloud_out" />
-		</node>
 		
 		<!--node name="sick_tim310s01" pkg="sick_tim" type="sick_tim310s01" respawn="false" output="screen">
     			<param name="min_ang" type="double" value="-1.57"/>
@@ -157,6 +134,29 @@ RoboCard based frobits using 1800/700 ohm voltage dividers:
 			<node pkg="line_calculation" name="line_calculation_node" type="line_calculation_node" output="screen" /-->
 		
 	</group>
+
+	<!-- VELODYNE Lidar -->
+		<arg name="pcap" default="" />
+		<arg name="calibration" default="$(find velodyne_pointcloud)/params/32db.yaml"/>
+
+		<!-- start nodelet manager and driver nodelets -->
+		<include file="$(find velodyne_driver)/launch/nodelet_manager.launch">
+		<arg name="model" value="32E"/>
+		<arg name="pcap" value="$(arg pcap)"/>
+		</include>
+
+		<!-- start cloud nodelet -->
+		<include file="$(find velodyne_pointcloud)/launch/cloud_nodelet.launch">
+		<arg name="calibration" value="$(arg calibration)"/>
+		<arg name="min_range" value="0.5" />
+		<arg name="max_range" value="5.0" />
+		</include>
+
+		<node pkg="velodyne_node" name="velodyne_node" type="velodyne_node" output="screen" >
+			<param name="ring" value="15" />
+			<param name="pointcloud_in" value="/velodyne_points" />
+			<param name="pointcloud_out" value="/pointcloud_out" />
+		</node>
 
 	<group ns="fmProcessors">
 		<!-- calculate odometry based on wheel encoders and IMU yaw axis orientation -->
