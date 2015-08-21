@@ -1,5 +1,8 @@
-<launch>	
-	<node type="human_awareness.py" name="human_awareness" pkg="human_awareness" respawn="true">
+<launch>
+	<node type="soundplay_node.py" name="soundplay_node" pkg="sound_play" respawn="true" output="screen">
+
+	</node>	
+	<node type="human_awareness.py" name="human_awareness" pkg="human_awareness" respawn="true" output="screen">
 
 	</node>
 
