@@ -25,8 +25,9 @@ class KalmanFilterClass:
         #self.listningAngularData()
         self.pubImu = rospy.Publisher("/measHoughKalman",  Float64MultiArray, queue_size=10)
         # Plotting parameters
-        self.showPlot = True
-        self.show3DLiveView = False 
+
+        self.showPlot = rospy.get_param('/kalman_filter_pkg/showMeasurements',False)
+        self.show3DLiveView = False
         self.show3DLiveViewInterval = 3
         
         self.unwrapLast = 0.0;
@@ -41,7 +42,7 @@ class KalmanFilterClass:
         # approx. bias values determined by averaging over static measurements
         self.bias_gyro_x = 0.0753 # [rad/measurement]
         self.bias_gyro_y = 0.0417 # [rad/measurement]
-        self.bias_gyro_z = 0.0008 # [rad/measurement]
+        self.bias_gyro_z = 0.0008 # [rad/measurement]cd
 
 
         self.bias_gyro_x = 0.0 # [rad/measurement]

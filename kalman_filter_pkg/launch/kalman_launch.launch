@@ -1,6 +1,5 @@
 <launch>	
-	<node type="kalman_filter.py" name="kalman_filter" pkg="kalman_filter_pkg" respawn="true">
-
+	<node type="kalman_filter.py" name="kalman_filter_pkg" pkg="kalman_filter_pkg" respawn="true" output="screen">
+		<param name="showMeasurements" value="False" type="bool"/>
 	</node>
-
 </launch>
