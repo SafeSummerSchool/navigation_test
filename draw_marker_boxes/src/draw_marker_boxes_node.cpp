@@ -14,20 +14,6 @@ ros::Publisher marker_pub_BBox;
 
         
       visualization_msgs::Marker lines(float x1,float y1, float z1,float x2,float y2, float z2, visualization_msgs::Marker lineCollection ){
-		visualization_msgs::Marker line_list;
-        line_list.header.frame_id = line_list.header.frame_id = "/laser";
-        line_list.header.stamp = line_list.header.stamp = ros::Time::now();
-        line_list.ns = line_list.ns = "points_and_lines";
-        line_list.action = line_list.action = visualization_msgs::Marker::ADD;
-        line_list.pose.orientation.w = line_list.pose.orientation.w = 1.0;
-
-        line_list.id = 2;
-        line_list.type = visualization_msgs::Marker::LINE_LIST;
-
-        line_list.scale.x = 0.05;
-
-        line_list.color.r = 1.0;
-        line_list.color.a = 1.0;
             geometry_msgs::Point p;
             p.x = x2;
             p.y = y2;
@@ -59,7 +45,7 @@ void bboxesCallback(const obstacle_detection::boundingboxes& bboxes)
 
     line_list.type = visualization_msgs::Marker::LINE_LIST;
 
-    line_list.scale.x = 0.1;
+    line_list.scale.x = 0.05;
 
 
     // Line list is red
@@ -71,7 +57,7 @@ void bboxesCallback(const obstacle_detection::boundingboxes& bboxes)
 			Start_x = bboxes.boundingboxes[i].start.x;
 			Start_y = bboxes.boundingboxes[i].start.y;	
 			Width_x = bboxes.boundingboxes[i].width.x;
-			Width_x = bboxes.boundingboxes[i].width.y;
+			Width_y = bboxes.boundingboxes[i].width.y;
 		    //1-2
 		    line_list=lines(Start_x, Start_y, 0, Start_x+Width_x, Start_y, 0,line_list);
 		    

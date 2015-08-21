@@ -53,7 +53,7 @@ void Frobit::bboxesCallback(const obstacle_detection::boundingboxes& bboxes, int
 
     line_list.scale.x = 0.05;
 
-	ROS_INFO("1");
+
 
     // Line list is red
     line_list.color.g = 1.0;
@@ -66,9 +66,9 @@ void Frobit::bboxesCallback(const obstacle_detection::boundingboxes& bboxes, int
 			Width_x = bboxes.boundingboxes[i].width.x;
 			Width_y = bboxes.boundingboxes[i].width.y;
 		    //1-2
-		ROS_INFO("2");
+
 		    line_list=lines(Start_x, Start_y, 0, Start_x+Width_x, Start_y, 0,line_list);
-		    	ROS_INFO("3");
+
 		    //2-3
 		    line_list=lines(Start_x+Width_x, Start_y, 0, Start_x+Width_x, Start_y+Width_y, 0,line_list) ;
 		    //3-4
@@ -94,7 +94,7 @@ void Frobit::bboxesCallback(const obstacle_detection::boundingboxes& bboxes, int
 					X2 = (double)(r - (double)Y2  * sin(theta)) / cos(theta);
 					//ROS_INFO("nede");
 				}
-	ROS_INFO("4");
+
 		    line_list=lines( X1, Y1, 0, X2, Y2, 0,line_list);
 				r = r2_;
 				if ((theta > PI/4 && theta < 3*PI/4) || (theta > 5*PI/4 && theta < 7*PI/4))
@@ -114,12 +114,10 @@ void Frobit::bboxesCallback(const obstacle_detection::boundingboxes& bboxes, int
 					X2 = (double)(r - (double)Y2  * sin(theta)) / cos(theta);
 					//ROS_INFO("nede");
 				}
-	ROS_INFO("5");
 		    line_list=lines( X1, Y1, 0, X2, Y2, 0,line_list);
 			
 	
     marker_pub_BBox.publish(line_list);
-	ROS_INFO("6");
 }
 
 
@@ -163,7 +161,7 @@ void Frobit::updateVel(const std_msgs::Float64MultiArray houghInfo, const obstac
 	float Width_y = 0;
 	float distance = 99;
 	int foundPos = 0;
-	ROS_INFO("updateVel");
+
 	// search through bounding boxes list, delete all the ones that are behind the robot (x is negative) and save the one that is closest to the robot (smallest x)
 	for (size_t i=0;i<bboxes.boundingboxes.size();i++)
 	{

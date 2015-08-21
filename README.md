@@ -19,3 +19,9 @@
                 - $ ./configure --without-hdf5
                 - $ make
 		- $ sudo make install
+
+# Exporting messages over network (rostopic echo /msg_topic)
+- #sudo nano /etc/hosts
+- Add the following line: 10.42.0.1	frobitS
+- Save and exit
+- #export ROS_MASTER_URI=http://10.42.0.1:11311
