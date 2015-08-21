@@ -2,7 +2,7 @@
 #include <sensor_msgs/LaserScan.h>
 #include <sstream>
 
-#define PI 3.14159265359
+#define PI M_PI
 #define RAD2DEG 180/PI
 #define ANGLE 20*(PI/180)
 
@@ -192,6 +192,19 @@ void Frobit::updateVel(const std_msgs::Float64MultiArray houghInfo, const obstac
 		r1_ = r2_;
 		r2_ = tmp;
 	}
+	
+	//check if the BBox is close to the robot	
+	if(Start_x < d_max)
+	{	
+		if(Start_y > 0)
+		{
+			r2_ = Start_y; // because r1_ should be negative
+		}
+		else
+		{
+			r1_ = Start_y+Width_y;
+		}
+	}
 
 	// compute distances to the two lines and the desired "center lane"
 	float r_dist_ = r1_+r2_;  
@@ -206,19 +219,7 @@ void Frobit::updateVel(const std_msgs::Float64MultiArray houghInfo, const obstac
 	}
 	// adjust the angle with the error
 	twist.twist.angular.z = -0.4*theta*DEG2RAD+err_;
-	
-	//check if the BBox is close to the robot	
-	if(Start_x < d_max)
-	{	
-		if(Start_y > 0)
-		{
-			r2_ = Start_y; // because r1_ should be negative
-		}
-		else
-		{
-			r1_ = Start_y+Width_y;
-		}
-	}
+
 	// handle the velocity, in case robot is running close to an obstacle 
 	float R=std::min(fabs(r1_),fabs(r2_)); //smallest r distance
 
@@ -226,7 +227,7 @@ void Frobit::updateVel(const std_msgs::Float64MultiArray houghInfo, const obstac
 	float phi = fabs(90-fabs(theta))*DEG2RAD;
 	float front_dist_ = R/cos(phi);
 	if(bboxes.boundingboxes.size()>0)
-		bboxesCallback(bboxes,foundPos,r1_,r2_,theta);
+		bboxesCallback(bboxes,foundPos,r1_,r2_,(-theta+90)*DEG2RAD);
 
 	// change the velocity
 	twist.twist.linear.x = std::min((float)fabs(front_dist_/d_max), 1.0f)*v_max;	

@@ -19,7 +19,8 @@
 #include <visualization_msgs/Marker.h>
 
 #define M_PI2   2*M_PI
-#define DEG2RAD 0.0174533f
+#define DEG2RAD .017453293f
+
 
 class Frobit {
 private:
