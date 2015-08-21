@@ -24,7 +24,7 @@ ros::Publisher marker_pub_BBox;
         line_list.id = 2;
         line_list.type = visualization_msgs::Marker::LINE_LIST;
 
-        line_list.scale.x = 0.1;
+        line_list.scale.x = 0.05;
 
         line_list.color.r = 1.0;
         line_list.color.a = 1.0;
@@ -42,6 +42,7 @@ ros::Publisher marker_pub_BBox;
             lineCollection.points.push_back(p);
 
             //marker_pub.publish(line_list);
+		return lineCollection;
         }
 
 

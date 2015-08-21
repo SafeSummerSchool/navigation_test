@@ -20,21 +20,6 @@ ros::Publisher marker_pub_BBox;
 
         
   visualization_msgs::Marker  Frobit::lines(float x1,float y1, float z1,float x2,float y2, float z2, visualization_msgs::Marker lineCollection ){
-		visualization_msgs::Marker line_list;
-        line_list.header.frame_id = line_list.header.frame_id = "/laser";
-        line_list.header.stamp = line_list.header.stamp = ros::Time::now();
-        line_list.ns = line_list.ns = "points_and_lines";
-        line_list.action = line_list.action = visualization_msgs::Marker::ADD;
-        line_list.pose.orientation.w = line_list.pose.orientation.w = 1.0;
-
-        line_list.id = 2;
-        line_list.type = visualization_msgs::Marker::LINE_LIST;
-
-        line_list.scale.x = 0.1;
-
-        line_list.color.g = 1.0;
-        line_list.color.b = 1.0;
-        line_list.color.a = 1.0;
             geometry_msgs::Point p;
             p.x = x2;
             p.y = y2;
@@ -49,6 +34,7 @@ ros::Publisher marker_pub_BBox;
             lineCollection.points.push_back(p);
 
             //marker_pub.publish(line_list);
+		return lineCollection;
         }
 
 
@@ -65,21 +51,24 @@ void Frobit::bboxesCallback(const obstacle_detection::boundingboxes& bboxes, int
 
     line_list.type = visualization_msgs::Marker::LINE_LIST;
 
-    line_list.scale.x = 0.1;
+    line_list.scale.x = 0.05;
 
+	ROS_INFO("1");
 
     // Line list is red
     line_list.color.g = 1.0;
+	line_list.color.r = 1.0;
     line_list.color.a = 1.0;
 	
 		
 			Start_x = bboxes.boundingboxes[i].start.x;
 			Start_y = bboxes.boundingboxes[i].start.y;	
 			Width_x = bboxes.boundingboxes[i].width.x;
-			Width_x = bboxes.boundingboxes[i].width.y;
+			Width_y = bboxes.boundingboxes[i].width.y;
 		    //1-2
+		ROS_INFO("2");
 		    line_list=lines(Start_x, Start_y, 0, Start_x+Width_x, Start_y, 0,line_list);
-		    
+		    	ROS_INFO("3");
 		    //2-3
 		    line_list=lines(Start_x+Width_x, Start_y, 0, Start_x+Width_x, Start_y+Width_y, 0,line_list) ;
 		    //3-4
@@ -105,6 +94,7 @@ void Frobit::bboxesCallback(const obstacle_detection::boundingboxes& bboxes, int
 					X2 = (double)(r - (double)Y2  * sin(theta)) / cos(theta);
 					//ROS_INFO("nede");
 				}
+	ROS_INFO("4");
 		    line_list=lines( X1, Y1, 0, X2, Y2, 0,line_list);
 				r = r2_;
 				if ((theta > PI/4 && theta < 3*PI/4) || (theta > 5*PI/4 && theta < 7*PI/4))
@@ -124,10 +114,12 @@ void Frobit::bboxesCallback(const obstacle_detection::boundingboxes& bboxes, int
 					X2 = (double)(r - (double)Y2  * sin(theta)) / cos(theta);
 					//ROS_INFO("nede");
 				}
+	ROS_INFO("5");
 		    line_list=lines( X1, Y1, 0, X2, Y2, 0,line_list);
 			
 	
     marker_pub_BBox.publish(line_list);
+	ROS_INFO("6");
 }
 
 
@@ -165,12 +157,13 @@ void Frobit::boxesCallback(const obstacle_detection::boundingboxes& bboxes){
 
 void Frobit::updateVel(const std_msgs::Float64MultiArray houghInfo, const obstacle_detection::boundingboxes bboxes){
 	//get bounding boxes
-	float Start_x = 0;
+	float Start_x = 999999;
 	float Start_y = 0;	
 	float Width_x = 0;
 	float Width_y = 0;
 	float distance = 99;
 	int foundPos = 0;
+	ROS_INFO("updateVel");
 	// search through bounding boxes list, delete all the ones that are behind the robot (x is negative) and save the one that is closest to the robot (smallest x)
 	for (size_t i=0;i<bboxes.boundingboxes.size();i++)
 	{
@@ -180,7 +173,7 @@ void Frobit::updateVel(const std_msgs::Float64MultiArray houghInfo, const obstac
 			Start_x = bboxes.boundingboxes[i].start.x;
 			Start_y = bboxes.boundingboxes[i].start.y;	
 			Width_x = bboxes.boundingboxes[i].width.x;
-			Width_x = bboxes.boundingboxes[i].width.y;
+			Width_y = bboxes.boundingboxes[i].width.y;
 			foundPos = i;
 		}
 
@@ -234,7 +227,8 @@ void Frobit::updateVel(const std_msgs::Float64MultiArray houghInfo, const obstac
 	// determine the frontal distance to the obstacle	
 	float phi = fabs(90-fabs(theta))*DEG2RAD;
 	float front_dist_ = R/cos(phi);
-	bboxesCallback(bboxes,foundPos,r1_,r2_,theta);
+	if(bboxes.boundingboxes.size()>0)
+		bboxesCallback(bboxes,foundPos,r1_,r2_,theta);
 
 	// change the velocity
 	twist.twist.linear.x = std::min((float)fabs(front_dist_/d_max), 1.0f)*v_max;	
