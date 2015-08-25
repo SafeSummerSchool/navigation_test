@@ -27,4 +27,4 @@
 - #export ROS_MASTER_URI=http://10.42.0.1:11311
 
 # Synchronize your local workspace with the frobit (rsync command). 
-rsync -avz --del ~/catkin_ws/src/navigation/* robot@10.0.42.60:~/catkin_ws/src/navigation/*
+	rsync -avz --del ~/catkin_ws/src/navigation/* robot@10.0.42.60:~/catkin_ws/src/navigation/*
