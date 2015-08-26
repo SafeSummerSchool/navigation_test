@@ -118,6 +118,7 @@ void rawCloudHandler(const sensor_msgs::PointCloud2ConstPtr& laserCloud)
 		point = laserCloudIn->points[i];
 		angleH = atan2(point.y,point.x);
 		distance = sqrt(point.x*point.x+point.y*point.y);
+		//10000, is to make a rounding of the numbers, as to not be influenced by low insecurity.
 		angleV = roundf(atan(point.z/distance)*10000)/10000;
 
 		if ((angleH > view_direction-view_width/2) && (angleH < view_direction+view_width/2) && (distance > distance_min) && (distance < distance_max))
