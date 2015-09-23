@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   rosbag
   roscpp
   std_msgs
+  velodyne_pointcloud
 )
 
 catkin_package(
@@ -29,7 +30,9 @@ link_directories(${PCL_LIBRARIES})
 
 add_definitions(${PCL_DEFINITIONS})
 
-add_executable(velodyne_node src/velodyne_node.cp)
+add_executable(velodyne_node src/velodyne_node.cpp)
+
+add_dependencies(velodyne_node velodyne_node_generate_messages_cpp)
 
 target_link_libraries(velodyne_node
   ${catkin_LIBRARIES}
@@ -106,12 +109,12 @@ target_link_libraries(velodyne_node
 ## LIBRARIES: libraries you create in this project that dependent projects also need
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
-catkin_package(
+#catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES velodyne_node
 #  CATKIN_DEPENDS other_catkin_pkg
 #  DEPENDS system_lib
-)
+#)
 
 ###########
 ## Build ##

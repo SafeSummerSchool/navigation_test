@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package>
-  <name>draw_boxes_lines</name>
+  <name>draw_marker_boxes</name>
   <version>0.0.0</version>
   <description>The draw_marker_boxes package</description>
 

@@ -49,7 +49,11 @@ link_directories(${PCL_LIBRARIES})
 
 add_definitions(${PCL_DEFINITIONS})
 
+
+
 add_executable(obstacle_detection src/obstacle_detection.cpp)
+
+add_dependencies(obstacle_detection obstacle_detection_generate_messages_cpp)
 
 target_link_libraries(obstacle_detection
   ${catkin_LIBRARIES}
@@ -126,12 +130,12 @@ target_link_libraries(obstacle_detection
 ## LIBRARIES: libraries you create in this project that dependent projects also need
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
-catkin_package(
+#catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES obstacle_detection
 #  CATKIN_DEPENDS other_catkin_pkg
 #  DEPENDS system_lib
-)
+#)
 
 ###########
 ## Build ##

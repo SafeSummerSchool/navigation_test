@@ -7,6 +7,7 @@ project(draw_marker_lines)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   visualization_msgs
+  hough_line_detect
 )
 
 ## System dependencies are found with CMake's conventions
@@ -79,7 +80,7 @@ add_executable(draw_marker_lines_node src/draw_marker_lines_node.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-# add_dependencies(draw_marker_lines_node draw_marker_lines_generate_messages_cpp)
+add_dependencies(draw_marker_lines_node draw_marker_lines_generate_messages_cpp hough_line_detect_gencpp)
 
 ## Specify libraries to link a library or executable target against
  target_link_libraries(draw_marker_lines_node
