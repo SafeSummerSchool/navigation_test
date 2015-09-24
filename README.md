@@ -1,3 +1,7 @@
+# Missing velodyne-points package
+	- Simply execute the following command
+		$ sudo apt-get install ros-indigo-velodyne-pointcloud
+
 # navigation_test
 -- testing of the Hough Line &amp; simple navigation algorithm
 
