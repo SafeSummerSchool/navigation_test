@@ -1,6 +1,13 @@
-# Missing velodyne-points package
-	- Simply execute the following command
-		$ sudo apt-get install ros-indigo-velodyne-pointcloud
+# Setting up velodyne: 
+	- Get velodyne package
+		$ sudo apt-get install ros-indigo-velodyne
+	- Assign a static ip to the velodyne (if it is connected to eth1)
+		$ sudo ifconfig eth1 192.168.3.100
+		$ sudo route add 192.168.17.240 eth1
+
+# Error in human_awareness: Import error: No module named sound_play.libsoundplay
+	- Simply execute the following command 
+		$ sudo apt-get install ros-indigo-sound-play
 
 # navigation_test
 -- testing of the Hough Line &amp; simple navigation algorithm
