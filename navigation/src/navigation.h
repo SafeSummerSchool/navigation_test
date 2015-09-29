@@ -1,7 +1,7 @@
 // %Tag(FULLTEXT)%
 #include "ros/ros.h"
 #include "std_msgs/String.h"
-#include <std_msgs/Bool.h>
+#include <msgs/BoolStamped.h>
 #include <std_msgs/Float64.h>
 #include <sensor_msgs/Imu.h>
 #include <iostream>
@@ -27,7 +27,7 @@ private:
 	// variables
 	int count; 
 	ros::NodeHandle n; 
-	std_msgs::Bool deadman_button; //Deadman button message
+	msgs::BoolStamped deadman_button; //Deadman button message
 
 	double z_axis; 
 	double x_axis;

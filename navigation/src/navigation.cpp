@@ -133,8 +133,8 @@ Frobit::Frobit(){
 
 	sub_BB = n.subscribe("/obstacle_detection/boundingboxes", 5, &Frobit::boxesCallback, this);
 	sub_lines = n.subscribe("/measHoughKalman", 5, &Frobit::houghCallback,this);
-	twist_pub_ = n.advertise<geometry_msgs::TwistStamped>("/cmd_vel2", 1000);
-	deadman_pub_ = n.advertise<std_msgs::Bool>("/fmCommand/deadman", 1000);
+	twist_pub_ = n.advertise<geometry_msgs::TwistStamped>("/fmCommand/cmd_vel", 1000);
+	deadman_pub_ = n.advertise<msgs::BoolStamped>("/fmSafe/deadman", 1000);
 	error_pub_ = n.advertise<std_msgs::Float64>("/frobyte/error", 1000);
 
 }
